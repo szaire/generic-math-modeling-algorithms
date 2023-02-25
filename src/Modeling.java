@@ -22,13 +22,25 @@ public class Modeling
     }
 
     public Modeling(Data input) {
-        this.dataInput = input;
         Loader.loadNativeLibraries();
+        this.dataInput = input;
 
-        solver = MPSolver.createSolver("SCIP");
+        this.solver = MPSolver.createSolver("SCIP");
 
-        nOrigens = dataInput.get_nOrigens();
-        nDestinos = dataInput.get_nDestinos();
+        int balanceType = this.dataInput.modelBalance();
+        if (balanceType == 0) {
+            balancedModeling();
+        }
+        else {
+            int expectedBalance = this.dataInput.getTotalOffer() - this.dataInput.getTotalDemand();
+
+            if (expectedBalance > 0) {
+                unbalancedModeling_Demand(expectedBalance);
+            }
+            else if (expectedBalance < 0) {
+                unbalancedModeling_Offer(expectedBalance * -1);
+            }
+        }
 
         // Definindo todas as veriáveis da problemática
         this.vars = new MPVariable[nOrigens][nDestinos];
@@ -37,9 +49,65 @@ public class Modeling
                 this.vars[i][j] = solver.makeIntVar(0.0, infinity, "x_" + (i+1) + "_" + (j+1));
             }
         }
-
         // Definindo vetor de restrições
         this.cons = new MPConstraint[nOrigens + nDestinos];
+    }
+
+    private void balancedModeling() {
+        this.nOrigens = dataInput.get_nOrigens();
+        this.nDestinos = dataInput.get_nDestinos();
+    }
+
+    private void unbalancedModeling_Demand(int expectedBalance) {
+        this.nOrigens = dataInput.get_nOrigens();
+        this.nDestinos = dataInput.get_nDestinos() + 1;
+        this.dataInput.setnDestinos(this.nDestinos);
+
+        // Atualizando o vetor de Demanda para o caso desbalanceado
+        int[] newDemanda = new int[this.nDestinos];
+        for (int i = 0; i < this.nDestinos-1; i++) {
+            newDemanda[i] = this.dataInput.getDemanda()[i];
+        }
+        newDemanda[this.nDestinos-1] = expectedBalance; // Demanda fictícia para balancear o modelo
+        this.dataInput.setDemanda(newDemanda);
+
+        // Atualizando a matriz custo para o caso desbalanceado
+        int[][] newCusto = new int[this.nOrigens][this.nDestinos];
+        for (int i = 0; i < this.nOrigens; i++) {
+            for (int j = 0; j < this.nDestinos; j++) {
+                if (j == this.nDestinos - 1) {
+                    break; // Adicionando custo 0 à nova demanda fictícia
+                }
+                newCusto[i][j] = this.dataInput.getCusto()[i][j];
+            }
+        }
+        this.dataInput.setCusto(newCusto);
+    }
+
+    private void unbalancedModeling_Offer(int expectedBalance) {
+        this.nOrigens = dataInput.get_nOrigens() + 1;
+        this.nDestinos = dataInput.get_nDestinos();
+        this.dataInput.setnOrigens(this.nOrigens);
+
+        // Atualizando o vetor de Demanda para o caso desbalanceado
+        int[] newProducao = new int[this.nOrigens];
+        for (int i = 0; i < this.nOrigens-1; i++) {
+            newProducao[i] = this.dataInput.getProducao()[i];
+        }
+        newProducao[this.nOrigens-1] = expectedBalance; // Oferta fictícia para balancear o modelo
+        this.dataInput.setProducao(newProducao);
+
+        // Atualizando a matriz custo para o caso desbalanceado
+        int[][] newCusto = new int[this.nOrigens][this.nDestinos];
+        for (int i = 0; i < this.nOrigens; i++) {
+            for (int j = 0; j < this.nDestinos; j++) {
+                if (i == this.nOrigens - 1) {
+                    break; // Adicionando custo 0 à nova produção fictícia
+                }
+                newCusto[i][j] = this.dataInput.getCusto()[i][j];
+            }
+        }
+        this.dataInput.setCusto(newCusto);
     }
 
     public void defineConstraints() {

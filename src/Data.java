@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Data {
@@ -8,6 +9,8 @@ public class Data {
     private int[] producao;
     private int[] demanda;
     private int[][] custo;
+    private int totalOffer;
+    private int totalDemand;
 
     public Data(String filename) throws FileNotFoundException {
         // Encontro o arquivo de texto com o nome passado como parâmetro
@@ -32,6 +35,34 @@ public class Data {
             for (int j = 0; j < nDestinos; j++) {
                 this.custo[i][j] = in.nextInt();
             }
+        }
+    }
+
+    public int modelBalance() {
+        this.totalOffer = Arrays.stream(this.producao).reduce(0, Integer::sum);
+        this.totalDemand = Arrays.stream(this.demanda).reduce(0, Integer::sum);
+        int balanceType = totalOffer - totalDemand;
+
+        if (balanceType == 0) {
+            System.out.println("=================");
+            System.out.println("Modelo Balanceado");
+            System.out.println("=================");
+            System.out.println();
+            return 0;
+        }
+        else if (balanceType > 0) {
+            System.out.println("===============================");
+            System.out.println("Modelo Desbalanceado p/ Demanda");
+            System.out.println("===============================");
+            System.out.println();
+            return 1;
+        }
+        else {
+            System.out.println("==============================");
+            System.out.println("Modelo Desbalanceado p/ Oferta");
+            System.out.println("==============================");
+            System.out.println();
+            return -1;
         }
     }
 
@@ -82,6 +113,22 @@ public class Data {
         return nDestinos;
     }
 
+    public void setnOrigens(int nOrigens) {
+        this.nOrigens = nOrigens;
+    }
+
+    public void setnDestinos(int nDestinos) {
+        this.nDestinos = nDestinos;
+    }
+
+    public void setProducao(int[] producao) {
+        this.producao = producao;
+    }
+
+    public void setDemanda(int[] demanda) {
+        this.demanda = demanda;
+    }
+
     public int[] getProducao() {
         return producao;
     }
@@ -90,7 +137,19 @@ public class Data {
         return demanda;
     }
 
+    public void setCusto(int[][] custo) {
+        this.custo = custo;
+    }
+
     public int[][] getCusto() {
         return custo;
+    }
+
+    public int getTotalOffer() {
+        return totalOffer;
+    }
+
+    public int getTotalDemand() {
+        return totalDemand;
     }
 }
