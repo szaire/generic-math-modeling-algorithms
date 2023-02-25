@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="ORTools">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/../ORTools" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/../ORTools" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/../ORTools" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/../ORTools" recursive="false" type="SOURCES" />
+  </library>
+</component>
