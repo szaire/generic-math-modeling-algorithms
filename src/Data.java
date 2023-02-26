@@ -44,23 +44,25 @@ public class Data {
         int balanceType = totalOffer - totalDemand;
 
         if (balanceType == 0) {
-            System.out.println("=================");
-            System.out.println("Modelo Balanceado");
-            System.out.println("=================");
+            System.out.println("░░░░░░░░░░░░░░░░░░░░░");
+            System.out.println("░ Modelo Balanceado ░");
+            System.out.println("░░░░░░░░░░░░░░░░░░░░░");
             System.out.println();
             return 0;
         }
         else if (balanceType > 0) {
-            System.out.println("===============================");
-            System.out.println("Modelo Desbalanceado p/ Demanda");
-            System.out.println("===============================");
+            System.out.println("░░░░░░░░░░░░░░░░░░░░░░░░");
+            System.out.println("░ Modelo Desbalanceado ░");
+            System.out.println("░  (Falta de Demanda)  ░");
+            System.out.println("░░░░░░░░░░░░░░░░░░░░░░░░");
             System.out.println();
             return 1;
         }
         else {
-            System.out.println("==============================");
-            System.out.println("Modelo Desbalanceado p/ Oferta");
-            System.out.println("==============================");
+            System.out.println("░░░░░░░░░░░░░░░░░░░░░░░░");
+            System.out.println("░ Modelo Desbalanceado ░");
+            System.out.println("░   (Falta de Oferta)  ░");
+            System.out.println("░░░░░░░░░░░░░░░░░░░░░░░░");
             System.out.println();
             return -1;
         }

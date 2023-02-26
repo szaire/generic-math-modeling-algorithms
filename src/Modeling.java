@@ -40,6 +40,9 @@ public class Modeling
             else if (expectedBalance < 0) {
                 unbalancedModeling_Offer(expectedBalance * -1);
             }
+
+            System.out.println("~x~ Nova configuração do modelo (agora balanceado): ~x~");
+            this.dataInput.printData();
         }
 
         // Definindo todas as veriáveis da problemática
